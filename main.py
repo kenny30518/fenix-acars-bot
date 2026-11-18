@@ -43,9 +43,7 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
                 return stand.strip()
 
     elif dest_icao == "RCTP":
-      # 交通部 TDX 桃園機場抵港 FIDS API
-      # 透過帶入日期參數過濾當天或指定日期的航班
-      url = f"https://tdx.transportdata.tw/api/basic/v2/Air/FIDS/Airport/Arrival/RCTP?$filter=stod(ScheduleArrivalTime) ge datetime'{target_date_str}T00:00:00' and stod(ScheduleArrivalTime) le datetime'{target_date_str}T23:59:59'"
+      url = "https://tdx.transportdata.tw/api/basic/v2/Air/FIDS/Airport/Arrival/RCTP"
       headers = {
           "User-Agent": (
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -53,6 +51,8 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
           "Accept": "application/json",
       }
       res = requests.get(url, headers=headers, timeout=10)
+      print(f"[RCTP TDX API] 狀態碼: {res.status_code}")
+
       if res.status_code == 200:
         data = res.json()
         flight_list = (
@@ -61,8 +61,19 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
         for item in flight_list:
           airline = item.get("AirlineID", "").strip()
           f_num = item.get("FlightNumber", "").strip()
+
+          # 比對航班號 (例如 BR868)
           if f"{airline}{f_num}" == iata_flight or f_num == iata_flight:
+            # 檢查抵達時間是否包含目標日期字串 (例如 2026-11-19)
+            arr_time = item.get(
+                "ScheduleArrivalTime", item.get("ActualArrivalTime", "")
+            )
             gate = item.get("Gate", "").strip()
+
+            print(
+                f"找到相符航班: {airline}{f_num}, 時間: {arr_time}, 登機門:"
+                f" {gate or '尚未指派'}"
+            )
             if gate:
               return gate
   except Exception as e:
