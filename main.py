@@ -43,7 +43,9 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
                 return stand.strip()
 
     elif dest_icao == "RCTP":
-      url = "https://tdx.transportdata.tw/api/basic/v2/Air/FIDS/Airport/Arrival"
+      # 交通部 TDX 桃園機場抵港 FIDS API
+      # 透過帶入日期參數過濾當天或指定日期的航班
+      url = f"https://tdx.transportdata.tw/api/basic/v2/Air/FIDS/Airport/Arrival/RCTP?$filter=stod(ScheduleArrivalTime) ge datetime'{target_date_str}T00:00:00' and stod(ScheduleArrivalTime) le datetime'{target_date_str}T23:59:59'"
       headers = {
           "User-Agent": (
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -53,14 +55,12 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
       res = requests.get(url, headers=headers, timeout=10)
       if res.status_code == 200:
         data = res.json()
-        # TDX 回傳通常為 List，相容防呆包裝
         flight_list = (
             data if isinstance(data, list) else data.get("Flights", [])
         )
         for item in flight_list:
           airline = item.get("AirlineID", "").strip()
           f_num = item.get("FlightNumber", "").strip()
-          # 比對完整代號 (如 BR868) 或純航班號 (如 868)
           if f"{airline}{f_num}" == iata_flight or f_num == iata_flight:
             gate = item.get("Gate", "").strip()
             if gate:
