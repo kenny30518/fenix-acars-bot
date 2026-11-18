@@ -10,7 +10,7 @@ DISPATCH_CALLSIGN = "EVA"  # 發送方公司代號
 
 
 def get_simbrief_data(username):
-  url = f"https://www.simbrief.com/api/xml.fetcher.php?username={username}&json=1"
+  url = f"https://www.simbrief.com/api/xml.fetcher.php?userid={username}&json=1"
   res = requests.get(url)
   return res.json() if res.status_code == 200 else None
 
