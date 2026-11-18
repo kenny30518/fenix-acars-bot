@@ -58,16 +58,23 @@ def main():
   )
 
   # 觸發條件：距離預計降落剩下 55 到 65 分鐘之間（配合每 5 分鐘檢查一次，避免重複發送）
-  if 55 <= mins_to_landing <= 60:
-    msg = (
-        f"ARRIVAL GATE INFO\nFLT: {callsign}\nDEST: {dest}\nASSIGNED GATE:"
-        f" {gate}\nSAFE LANDING."
-    )
-    send_hoppie_telex(HOPPIE_LOGON, DISPATCH_CALLSIGN, callsign, msg)
-    print("已成功發送 ACARS 停機位電傳！")
-  else:
-    print("尚未到達發送時機，待機中。")
+  #if 55 <= mins_to_landing <= 60:
+  #  msg = (
+  #      f"ARRIVAL GATE INFO\nFLT: {callsign}\nDEST: {dest}\nASSIGNED GATE:"
+  #     f" {gate}\nSAFE LANDING."
+  #  )
+  #  send_hoppie_telex(HOPPIE_LOGON, DISPATCH_CALLSIGN, callsign, msg)
+  #  print("已成功發送 ACARS 停機位電傳！")
+  #else:
+  #  print("尚未到達發送時機，待機中。")
 
+  if True:  # 測試用：強制立即發送
+  msg = (
+      f"TEST ARRIVAL GATE INFO\nFLT: {callsign}\nDEST: {dest}\nASSIGNED GATE:"
+      f" {gate}\nETA MINS: {mins_to_landing:.1f}"
+  )
+  send_hoppie_telex(HOPPIE_LOGON, DISPATCH_CALLSIGN, callsign, msg)
+  print("測試訊息已成功發送至 Hoppie！")
 
 if __name__ == "__main__":
   main()
