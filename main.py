@@ -43,7 +43,7 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
                 return stand.strip()
 
     elif dest_icao == "RCTP":
-      url = "https://www.taoyuan-airport.com/api/flight"
+      url = "https://tdx.transportdata.tw/api/basic/v2/Air/FIDS/Airport/Arrival"
       headers = {
           "User-Agent": (
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -52,10 +52,16 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
       }
       res = requests.get(url, headers=headers, timeout=10)
       if res.status_code == 200:
-        for item in res.json():
-          airline = item.get("AirlineCode", "").strip()
-          f_num = item.get("FlightNo", "").strip()
-          if f"{airline}{f_num}" == iata_flight:
+        data = res.json()
+        # TDX 回傳通常為 List，相容防呆包裝
+        flight_list = (
+            data if isinstance(data, list) else data.get("Flights", [])
+        )
+        for item in flight_list:
+          airline = item.get("AirlineID", "").strip()
+          f_num = item.get("FlightNumber", "").strip()
+          # 比對完整代號 (如 BR868) 或純航班號 (如 868)
+          if f"{airline}{f_num}" == iata_flight or f_num == iata_flight:
             gate = item.get("Gate", "").strip()
             if gate:
               return gate
