@@ -1,4 +1,3 @@
-```yaml
    name: Fenix ACARS Dispatcher
    on:
      schedule:
