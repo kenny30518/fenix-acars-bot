@@ -69,12 +69,12 @@ def main():
   #  print("尚未到達發送時機，待機中。")
 
   if True:  # 測試用：強制立即發送
-  msg = (
-      f"TEST ARRIVAL GATE INFO\nFLT: {callsign}\nDEST: {dest}\nASSIGNED GATE:"
-      f" {gate}\nETA MINS: {mins_to_landing:.1f}"
-  )
-  send_hoppie_telex(HOPPIE_LOGON, DISPATCH_CALLSIGN, callsign, msg)
-  print("測試訊息已成功發送至 Hoppie！")
+    msg = (
+        f"TEST ARRIVAL GATE INFO\nFLT: {callsign}\nDEST: {dest}\nASSIGNED GATE:"
+        f" {gate}\nETA MINS: {mins_to_landing:.1f}"
+    )
+    send_hoppie_telex(HOPPIE_LOGON, DISPATCH_CALLSIGN, callsign, msg)
+    print("測試訊息已成功發送至 Hoppie！")
 
 if __name__ == "__main__":
   main()
