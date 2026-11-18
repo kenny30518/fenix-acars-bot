@@ -9,7 +9,7 @@ import requests
 # 從 GitHub Secrets 讀取設定
 SIMBRIEF_USER = os.environ.get("SIMBRIEF_USER")
 HOPPIE_LOGON = os.environ.get("HOPPIE_LOGON")
-DISPATCH_CALLSIGN = "EVA"  # 發送方公司代號
+DISPATCH_CALLSIGN = "EVA FCD"  # 發送方公司代號
 
 
 def get_simbrief_data(username):
@@ -159,8 +159,7 @@ def main():
   # 如果要馬上測試，請暫時將下方改成：if True:
   # 正式自動運行時：請保持 if 55 <= mins_to_landing <= 60:
   # ==========================================
-  #if 55 <= mins_to_landing <= 60:  # 測試時可改寫為 if True:
-  if True:
+  if 55 <= mins_to_landing <= 60:  # 測試時可改寫為 if True:
     gate, source = resolve_arrival_gate(dest, icao_airline, flight_num)
     msg = (
         f"ARRIVAL GATE INFO ({source})\n"
