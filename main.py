@@ -43,8 +43,13 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
                 return stand.strip()
 
     elif dest_icao == "RCTP":
-      url = "https://www.taoyuan-airport.com/api/api/flight/a_flight"
-      headers = {"User-Agent": "Mozilla/5.0"}
+      url = "https://www.taoyuan-airport.com/api/flight"
+      headers = {
+          "User-Agent": (
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          ),
+          "Accept": "application/json",
+      }
       res = requests.get(url, headers=headers, timeout=10)
       if res.status_code == 200:
         for item in res.json():
