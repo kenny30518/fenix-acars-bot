@@ -51,7 +51,10 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
           "Accept": "application/json",
       }
       res = requests.get(url, headers=headers, timeout=10)
-      print(f"[RCTP TDX API] 狀態碼: {res.status_code}")
+      print(
+          f"[RCTP TDX API] 狀態碼: {res.status_code}, 目標比對日期:"
+          f" {target_date_str}"
+      )
 
       if res.status_code == 200:
         data = res.json()
@@ -62,20 +65,27 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
           airline = item.get("AirlineID", "").strip()
           f_num = item.get("FlightNumber", "").strip()
 
-          # 比對航班號 (例如 BR868)
+          # 1. 班號必須相符
           if f"{airline}{f_num}" == iata_flight or f_num == iata_flight:
-            # 檢查抵達時間是否包含目標日期字串 (例如 2026-11-19)
+            # 2. 抓取 TDX 回傳的時間字串 (例如 "2026-11-19T14:30:00+08:00")
             arr_time = item.get(
                 "ScheduleArrivalTime", item.get("ActualArrivalTime", "")
             )
-            gate = item.get("Gate", "").strip()
 
-            print(
-                f"找到相符航班: {airline}{f_num}, 時間: {arr_time}, 登機門:"
-                f" {gate or '尚未指派'}"
-            )
-            if gate:
-              return gate
+            # 3. 嚴格比對：時間字串必須包含我們指定的目標日期 (target_date_str)
+            if target_date_str in arr_time:
+              gate = item.get("Gate", "").strip()
+              print(
+                  f"找到相符航班: {airline}{f_num}, 時間: {arr_time} (符合"
+                  f" {target_date_str}), 登機門: {gate or '尚未指派'}"
+              )
+              if gate:
+                return gate
+            else:
+              print(
+                  f"找到班號 {airline}{f_num} 但時間 ({arr_time}) 不符合目標日期"
+                  f" {target_date_str}，略過。"
+              )
   except Exception as e:
     print(f"[{dest_icao} 查詢異常 {target_date_str}] {e}")
 
