@@ -40,7 +40,7 @@ def get_simbrief_data(username):
   return None
 
 
-def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
+def get_flight_real_gate(iata_flight, target_date_str, dest_icao, eta_dt_utc):
   try:
     if dest_icao == "VHHH":
       url = f"https://hongkongairport.com{target_date_str}&lang=en&cargo=false&arrival=true"
