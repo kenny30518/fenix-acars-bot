@@ -149,6 +149,7 @@ def poll_hoppie_atot(logon, dispatch_callsign, target_callsign):
       "from": dispatch_callsign,
       "to": target_callsign,
       "type": "poll",
+      "network": "VATSIM",
   }
   full_url = f"{base_url}?{urllib.parse.urlencode(params)}"
   try:
@@ -183,6 +184,7 @@ def send_hoppie_telex(logon, sender, recipient, message):
       "to": recipient,
       "type": "telex",
       "packet": message,
+      "network": "VATSIM",
   }
   full_url = f"{base_url}?{urllib.parse.urlencode(params)}"
   try:
