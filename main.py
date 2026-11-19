@@ -58,7 +58,7 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
                 return stand.strip()
 
     elif dest_icao == "RCTP":
-      url = "https://transportdata.tw"
+      url = "https://tdx.transportdata.tw/api/basic/v2/Air/FIDS/Airport/Arrival"
       headers = {
           "User-Agent": (
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
