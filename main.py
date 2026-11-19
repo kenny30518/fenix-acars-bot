@@ -58,6 +58,14 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
                 return stand.strip()
 
     elif dest_icao == "RCTP":
+      # 將 UTC 的 ETA 轉換為台灣時間 (UTC+8)，取得當地日期 YYYY-MM-DD
+      tw_tz = timezone(timedelta(hours=8))
+      eta_tw_date = (
+          eta_dt_utc.astimezone(tw_tz).strftime("%Y-%m-%d")
+          if eta_dt_utc
+          else target_date_str
+      )
+
       url = "https://tdx.transportdata.tw/api/basic/v2/Air/FIDS/Airport/Arrival"
       headers = {
           "User-Agent": (
@@ -75,12 +83,19 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao):
           airline = item.get("AirlineID", "").strip()
           f_num = item.get("FlightNumber", "").strip()
           if f"{airline}{f_num}" == iata_flight or f_num == iata_flight:
+            # 取得該航班在桃園機場表定或預計抵達的日期 (格式: 2026-11-19T16:10:00)
+            arr_time = item.get("EstimatedArrivalTime") or item.get("ScheduleArrivalTime") or ""
+            if eta_tw_date and not arr_time.startswith(eta_tw_date):
+              continue  # 若不是你這趟 ETA 當天（台灣時間）的航班，跳過不抓
+
             gate = item.get("Gate", "").strip()
             if gate:
               return gate
   except Exception as e:
     print(f"[{dest_icao} 查詢異常 {target_date_str}] {e}")
+
   return None
+
 
 
 def get_fallback_gate(dest_icao):
