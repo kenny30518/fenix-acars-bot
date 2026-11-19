@@ -10,7 +10,7 @@ import requests
 # 從 GitHub Secrets 讀取設定
 SIMBRIEF_USER = os.environ.get("SIMBRIEF_USER")
 HOPPIE_LOGON = os.environ.get("HOPPIE_LOGON")
-DISPATCH_CALLSIGN = "EVA FCD"
+DISPATCH_CALLSIGN = "EVAFCD"
 STATE_FILE = "flight_state.json"
 
 
