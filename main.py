@@ -30,7 +30,7 @@ def save_state(state):
 
 
 def get_simbrief_data(username):
-  url = f"https://simbrief.com{username}&json=1"
+  url = f"https://www.simbrief.com/api/xml.fetcher.php?username={username}&json=1"
   try:
     res = requests.get(url, timeout=10)
     if res.status_code == 200:
