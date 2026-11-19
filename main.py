@@ -134,7 +134,7 @@ def poll_hoppie_atot(logon, dispatch_callsign, target_callsign):
   params = {
       "logon": logon,
       "from": dispatch_callsign,
-      "to": dispatch_callsign,
+      "to": target_callsign,
       "type": "poll",
   }
   full_url = f"{base_url}?{urllib.parse.urlencode(params)}"
