@@ -130,7 +130,7 @@ def parse_atot_to_timestamp(atot_hhmm, now_utc):
 
 def poll_hoppie_atot(logon, dispatch_callsign, target_callsign):
   """輪詢 Hoppie，尋找包含 ATOT HHMM 的訊息"""
-  base_url = "http://hoppie.nl"
+  base_url = "http://www.hoppie.nl/acars/system/connect.html/connect.html"
   params = {
       "logon": logon,
       "from": dispatch_callsign,
