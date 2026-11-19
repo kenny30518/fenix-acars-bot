@@ -163,7 +163,7 @@ def poll_hoppie_atot(logon, dispatch_callsign, target_callsign):
 
 
 def send_hoppie_telex(logon, sender, recipient, message):
-  base_url = "http://hoppie.nl"
+  base_url = "http://www.hoppie.nl/acars/system/connect.html"
   params = {
       "logon": logon,
       "from": sender,
