@@ -40,7 +40,8 @@ def get_simbrief_data(username):
   return None
 
 
-def get_flight_real_gate(iata_flight, target_date_str, dest_icao, eta_dt_utc):
+def get_flight_real_gate(iata_flight, target_date_str, dest_icao, eta_dt_utc=None):
+  """依指定日期與 ETA 時間查詢真實停機位"""
   try:
     if dest_icao == "VHHH":
       url = f"https://hongkongairport.com{target_date_str}&lang=en&cargo=false&arrival=true"
@@ -97,34 +98,31 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao, eta_dt_utc):
   return None
 
 
-
-def get_fallback_gate(dest_icao):
-  try:
-    with open("gates.json", "r", encoding="utf-8") as f:
-      gates_db = json.load(f)
-    gate_list = gates_db.get(dest_icao) or gates_db.get("DEFAULT", ["B4"])
-    return random.choice(gate_list)
-  except Exception:
-    return "B4"
-
-
-def resolve_arrival_gate(dest_icao, icao_airline, flight_num):
+def resolve_arrival_gate(dest_icao, icao_airline, flight_num, eta_dt_utc=None):
+  """優先依據推算出的 ETA 日期查詢真實停機位，無資料則查前一日歷史紀錄，最後使用 JSON 備援"""
   iata_prefix = "BR" if icao_airline == "EVA" else icao_airline
   iata_flight = f"{iata_prefix}{flight_num}"
 
-  now_utc = datetime.now(timezone.utc)
-  today_str = now_utc.strftime("%Y-%m-%d")
-  yesterday_str = (now_utc - timedelta(days=1)).strftime("%Y-%m-%d")
+  # 若有提供推算的 ETA 時間，就以 ETA 的日期為第一優先；否則才用現在時間
+  base_dt = eta_dt_utc if eta_dt_utc else datetime.now(timezone.utc)
+  eta_date_str = base_dt.strftime("%Y-%m-%d")
+  prev_date_str = (base_dt - timedelta(days=1)).strftime("%Y-%m-%d")
 
-  real_gate = get_flight_real_gate(iata_flight, today_str, dest_icao)
+  print(f"正在查詢【ETA 目標日期 ({eta_date_str})】真實 FIDS 資料...")
+  real_gate = get_flight_real_gate(iata_flight, eta_date_str, dest_icao, eta_dt_utc)
   if real_gate:
-    return real_gate, "REAL-TIME (TODAY)"
+    print(f"成功取得 ETA 當日真實機位: {real_gate}")
+    return real_gate, f"REAL-TIME ({eta_date_str})"
 
-  real_gate = get_flight_real_gate(iata_flight, yesterday_str, dest_icao)
+  print(f"當日尚無資料，改為查詢【前一日 ({prev_date_str})】歷史資料...")
+  real_gate = get_flight_real_gate(iata_flight, prev_date_str, dest_icao, eta_dt_utc)
   if real_gate:
-    return real_gate, "REAL-TIME (YESTERDAY)"
+    print(f"成功取得前一日歷史機位: {real_gate}")
+    return real_gate, f"HIST ({prev_date_str})"
 
-  return get_fallback_gate(dest_icao), "OPS ASSIGNED (JSON)"
+  fallback = get_fallback_gate(dest_icao)
+  print(f"皆無法取得真實資料，使用 JSON 備援機位: {fallback}")
+  return fallback, "OPS ASSIGNED (JSON)"
 
 
 def parse_atot_to_timestamp(atot_hhmm, now_utc):
