@@ -1,7 +1,6 @@
 {
-  "plan_id": "1795071174",
+  "plan_id": "1795153610",
   "callsign": "EVA870",
-  "atot_ts": 1795073400,
-  "gate_sent": true,
-  "atot_str": "0730Z"
+  "atot_ts": null,
+  "gate_sent": false
 }
