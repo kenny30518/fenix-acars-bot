@@ -97,6 +97,16 @@ def get_flight_real_gate(iata_flight, target_date_str, dest_icao, eta_dt_utc=Non
 
   return None
 
+def get_fallback_gate(dest_icao):
+  """從 gates.json 讀取備援機位"""
+  try:
+    with open("gates.json", "r", encoding="utf-8") as f:
+      gates_db = json.load(f)
+    gate_list = gates_db.get(dest_icao) or gates_db.get("DEFAULT", ["B4"])
+    return random.choice(gate_list)
+  except Exception as e:
+    print(f"⚠️ 讀取 gates.json 失敗 ({e})，退回預設機位 B4")
+    return "B4"
 
 def resolve_arrival_gate(dest_icao, icao_airline, flight_num, eta_dt_utc=None):
   """優先依據推算出的 ETA 日期查詢真實停機位，無資料則查前一日歷史紀錄，最後使用 JSON 備援"""
