@@ -2,6 +2,6 @@
   "plan_id": "1795589470",
   "callsign": "EVA261",
   "atot_ts": 1795593000,
-  "gate_sent": false,
+  "gate_sent": true,
   "atot_str": "0750Z"
 }
